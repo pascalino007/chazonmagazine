@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy-950: #0f0f1a;
+  --navy-900: #161c28;
+  --navy-800: #1a1b2b;
+  --accent: #ff6b35;
+  --accent-light: #ff8c5a;
+}
+
+body {
+  @apply bg-navy-900 text-gray-100 antialiased;
+}
