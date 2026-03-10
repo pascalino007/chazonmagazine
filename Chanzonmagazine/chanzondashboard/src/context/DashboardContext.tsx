@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 
 export interface Category {
   id: string
@@ -48,17 +49,30 @@ function generateId() {
 interface DashboardContextValue {
   categories: Category[]
   posts: Post[]
-  addCategory: (data: { name: string; slug: string }) => Category
-  updateCategory: (id: string, data: { name: string; slug: string }) => void
-  deleteCategory: (id: string) => void
+  loading: boolean
+  addCategory: (data: { name: string; slug: string }) => Promise<Category>
+  updateCategory: (id: string, data: { name: string; slug: string }) => Promise<void>
+  deleteCategory: (id: string) => Promise<void>
   getCategory: (id: string) => Category | undefined
-  addPost: (data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => Post
-  updatePost: (id: string, data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => void
-  deletePost: (id: string) => void
+  addPost: (data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => Promise<Post>
+  updatePost: (id: string, data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => Promise<void>
+  deletePost: (id: string) => Promise<void>
   getPost: (id: string) => Post | undefined
 }
 
 const DashboardContext = createContext<DashboardContextValue | null>(null)
+
+function mapArticle(a: any): Post {
+  return {
+    id: a.id,
+    name: a.title,
+    image: a.imageUrl || '',
+    categoryId: a.categoryId,
+    sections: a.content ? JSON.parse(a.content) : [],
+    createdAt: a.createdAt,
+    updatedAt: a.updatedAt,
+  }
+}
 
 function ensureSections(sections: PostSection[], min = 3): PostSection[] {
   if (sections.length >= min) return sections
@@ -69,58 +83,78 @@ function ensureSections(sections: PostSection[], min = 3): PostSection[] {
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [categories, setCategories] = useState<Category[]>([])
   const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setCategories(loadJson(STORAGE_CATEGORIES, []))
-    setPosts(loadJson(STORAGE_POSTS, []))
+    const token = localStorage.getItem('chanzon_token')
+    if (token) {
+      const load = async () => {
+        try {
+          const [cats, arts] = await Promise.all([
+            api.categories.list(),
+            api.articles.list()
+          ])
+          setCategories(cats)
+          setPosts(arts.map(mapArticle))
+        } catch (e) {
+          console.error('Failed to load data:', e)
+        } finally {
+          setLoading(false)
+        }
+      }
+      load()
+    } else {
+      setLoading(false)
+    }
   }, [])
 
-  useEffect(() => {
-    saveJson(STORAGE_CATEGORIES, categories)
-  }, [categories])
-
-  useEffect(() => {
-    saveJson(STORAGE_POSTS, posts)
-  }, [posts])
-
-  const addCategory = useCallback((data: { name: string; slug: string }) => {
-    const newCat: Category = { id: generateId(), ...data }
-    setCategories((prev) => [...prev, newCat])
-    return newCat
-  }, [])
-
-  const updateCategory = useCallback((id: string, data: { name: string; slug: string }) => {
+  const updateCategory = useCallback(async (id: string, data: { name: string; slug: string }) => {
+    await api.categories.update(+id, data)
     setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, ...data } : c)))
   }, [])
 
-  const deleteCategory = useCallback((id: string) => {
+  const addCategory = useCallback(async (data: { name: string; slug: string }) => {
+    const res = await api.categories.create(data)
+    setCategories((prev) => [...prev, res])
+    return res
+  }, [])
+
+  const deleteCategory = useCallback(async (id: string) => {
+    await api.categories.remove(+id)
     setCategories((prev) => prev.filter((c) => c.id !== id))
     setPosts((prev) => prev.filter((p) => p.categoryId !== id))
   }, [])
 
   const getCategory = useCallback((id: string) => categories.find((c) => c.id === id), [categories])
 
-  const addPost = useCallback((data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => {
-    const now = new Date().toISOString()
-    const newPost: Post = {
-      id: generateId(),
-      ...data,
-      sections: ensureSections(data.sections),
-      createdAt: now,
-      updatedAt: now,
+  const addPost = useCallback(async (data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => {
+    const mapped = {
+      title: data.name,
+      imageUrl: data.image,
+      categoryId: data.categoryId,
+      content: JSON.stringify(data.sections),
+      status: 'published'
     }
+    const res = await api.articles.create(mapped)
+    const newPost = mapArticle(res)
     setPosts((prev) => [...prev, newPost])
     return newPost
   }, [])
 
-  const updatePost = useCallback((id: string, data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => {
-    const now = new Date().toISOString()
-    setPosts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...data, sections: ensureSections(data.sections), updatedAt: now } : p))
-    )
+  const updatePost = useCallback(async (id: string, data: { name: string; image: string; categoryId: string; sections: PostSection[] }) => {
+    const mapped = {
+      title: data.name,
+      imageUrl: data.image,
+      categoryId: data.categoryId,
+      content: JSON.stringify(data.sections)
+    }
+    await api.articles.update(parseInt(id), mapped)
+    const updated = mapArticle(await api.articles.get(parseInt(id)))
+    setPosts((prev) => prev.map((p) => (p.id === id ? updated : p)))
   }, [])
 
-  const deletePost = useCallback((id: string) => {
+  const deletePost = useCallback(async (id: string) => {
+    await api.articles.remove(parseInt(id))
     setPosts((prev) => prev.filter((p) => p.id !== id))
   }, [])
 
@@ -129,6 +163,9 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const value: DashboardContextValue = {
     categories,
     posts,
+    loading,
+    
+  
     addCategory,
     updateCategory,
     deleteCategory,

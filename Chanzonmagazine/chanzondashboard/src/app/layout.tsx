@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
-import { DashboardProvider } from '@/context/DashboardContext'
 
 export const metadata: Metadata = {
   title: 'Chanzon Dashboard',
@@ -13,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <body className="min-h-screen">
         <AuthProvider>
-          <DashboardProvider>{children}</DashboardProvider>
+          {children}
         </AuthProvider>
       </body>
     </html>

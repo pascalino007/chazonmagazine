@@ -22,13 +22,16 @@ export default function NewCategoryPage() {
     setSlug(s)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !slug.trim()) return
     setSaving(true)
-    addCategory({ name: name.trim(), slug: slug.trim() })
-    setSaving(false)
-    router.push('/dashboard/categories')
+    try {
+      await addCategory({ name: name.trim(), slug: slug.trim() })
+      router.push('/dashboard/categories')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (

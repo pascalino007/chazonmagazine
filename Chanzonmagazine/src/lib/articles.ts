@@ -10,6 +10,7 @@ export interface Article {
   date: string
   readTime: string
   imageUrl: string
+  audioUrl?: string
   content: string[]
 }
 
@@ -24,6 +25,7 @@ export const articles: Article[] = [
     date: '10 nov. 2025',
     readTime: '12 min',
     imageUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80',
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
     content: [
       "Les crises humanitaires se multiplient à travers le monde. Face à ces défis, les organisations humanitaires jouent un rôle essentiel en mobilisant des ressources et en coordonnant les efforts sur le terrain.",
       "La solidarité internationale ne se limite pas aux dons financiers. Elle passe par l'engagement des bénévoles, le partage d'expertise, et la volonté des citoyens de s'informer et d'agir.",
@@ -41,6 +43,7 @@ export const articles: Article[] = [
     date: '5 nov. 2025',
     readTime: '8 min',
     imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=80',
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
     content: [
       "L'accueil des réfugiés pose des défis juridiques, sociaux et humains. Pourtant, partout en Europe, des villes et des associations prouvent que l'intégration est possible.",
       "Les programmes d'accompagnement linguistique, d'insertion professionnelle et de parrainage citoyen montrent des résultats concrets.",
@@ -57,6 +60,7 @@ export const articles: Article[] = [
     date: '4 nov. 2025',
     readTime: '9 min',
     imageUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1200&q=80',
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
     content: [
       "Médecins Sans Frontières intervient dans plus de 70 pays. Les équipes font face à la violence, aux pénuries et à l'urgence, avec pour seule boussole le droit à la santé pour tous.",
       "Chirurgiens, infirmiers, logisticiens travaillent main dans la main pour apporter des soins de qualité.",
@@ -73,6 +77,7 @@ export const articles: Article[] = [
     date: '3 nov. 2025',
     readTime: '6 min',
     imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80',
+    audioUrl: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
     content: [
       "L'autonomisation des femmes est reconnue comme un levier majeur du développement.",
       "Les programmes de micro-crédit permettent à des milliers de femmes de créer ou de développer une activité génératrice de revenus.",

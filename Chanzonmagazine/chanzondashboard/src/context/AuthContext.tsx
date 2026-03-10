@@ -1,15 +1,14 @@
 'use client'
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { api } from '@/lib/api'
 
-const AUTH_KEY = 'chanzon_dashboard_auth'
-const USER = 'admin'
-const PASS = 'chanzonmagazine'
+const AUTH_KEY = 'chanzon_token'
 
 type AuthContextValue = {
   isAuthenticated: boolean
   hasChecked: boolean
-  login: (username: string, password: string) => boolean
+  login: (username: string, password: string) => Promise<boolean>
   logout: () => void
   error: string | null
   clearError: () => void
@@ -19,12 +18,16 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 function getStored(): boolean {
   if (typeof window === 'undefined') return false
-  return localStorage.getItem(AUTH_KEY) === 'true'
+  return !!localStorage.getItem(AUTH_KEY)
 }
 
-function setStored(value: boolean) {
+function setStored(value: string | null) {
   if (typeof window === 'undefined') return
-  value ? localStorage.setItem(AUTH_KEY, 'true') : localStorage.removeItem(AUTH_KEY)
+  if (value) {
+    localStorage.setItem(AUTH_KEY, value)
+  } else {
+    localStorage.removeItem(AUTH_KEY)
+  }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -37,20 +40,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setHasChecked(true)
   }, [])
 
-  const login = useCallback((username: string, password: string): boolean => {
+  const login = useCallback(async (username: string, password: string): Promise<boolean> => {
     setError(null)
-    if (username === USER && password === PASS) {
+    try {
+      const res = await api.auth.login(username, password)
+      setStored(res.access_token)
       setIsAuthenticated(true)
-      setStored(true)
       return true
+    } catch (e: any) {
+      setError(e.message || 'Login failed')
+      return false
     }
-    setError('Identifiants incorrects.')
-    return false
   }, [])
 
   const logout = useCallback(() => {
     setIsAuthenticated(false)
-    setStored(false)
+    setStored(null)
   }, [])
 
   const clearError = useCallback(() => setError(null), [])

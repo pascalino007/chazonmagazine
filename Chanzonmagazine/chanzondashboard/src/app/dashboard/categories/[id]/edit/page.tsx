@@ -23,13 +23,16 @@ export default function EditCategoryPage() {
     }
   }, [category])
 
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !slug.trim() || !category) return
     setSaving(true)
-    updateCategory(id, { name: name.trim(), slug: slug.trim() })
-    setSaving(false)
-    router.push('/dashboard/categories')
+    try {
+      await updateCategory(id, { name: name.trim(), slug: slug.trim() })
+      router.push('/dashboard/categories')
+    } finally {
+      setSaving(false)
+    }
   }
 
   if (!category) {

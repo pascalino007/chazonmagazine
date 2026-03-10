@@ -2,52 +2,36 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import type { CmsCategory } from '@/lib/cms-api'
 
-const CATEGORIES = [
-  { id: 'education', label: 'Éducation' },
-  { id: 'sante', label: 'Santé' },
-  { id: 'solidarite', label: 'Solidarité' },
-  { id: 'refugies', label: 'Réfugiés' },
-  { id: 'eau-sante', label: 'Eau & Santé' },
-  { id: 'environnement', label: 'Environnement' },
-  { id: 'autonomisation', label: 'Autonomisation' },
-  { id: 'action-humanitaire', label: 'Action Humanitaire' },
-]
+interface CategoryFiltersProps {
+  categories: CmsCategory[]
+}
 
-export function CategoryFilters() {
+export function CategoryFilters({ categories }: CategoryFiltersProps) {
   const pathname = usePathname()
   const currentCategory = pathname.startsWith('/category/')
     ? pathname.split('/category/')[1]?.split('/')[0] ?? null
     : null
 
+  const activeClass = 'px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide bg-accent text-white shadow-md shadow-accent/25 transition-all'
+  const inactiveClass = 'px-4 py-2 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 hover:border-accent hover:text-accent transition-all duration-200'
+
   return (
     <div className="flex flex-wrap gap-2">
-      <Link
-        href="/"
-        className={
-          !currentCategory
-            ? 'px-4 py-2 rounded-lg text-sm font-medium bg-accent text-white transition-colors'
-            : 'px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-primary border border-slate-300 hover:border-slate-400 hover:bg-slate-200 transition-colors'
-        }
-      >
+      <Link href="/" className={!currentCategory ? activeClass : inactiveClass}>
         Tous
       </Link>
-      {CATEGORIES.map((cat) => {
-        const isActive = currentCategory === cat.id
-        return (
-          <Link
-            key={cat.id}
-            href={`/category/${cat.id}`}
-            className={
-              isActive
-                ? 'px-4 py-2 rounded-lg text-sm font-medium bg-accent text-white transition-colors'
-                : 'px-4 py-2 rounded-lg text-sm font-medium bg-slate-100 text-primary border border-slate-300 hover:border-slate-400 hover:bg-slate-200 transition-colors'
-            }
-          >
-            {cat.label}
-          </Link>
-        )
-      })}
+      {categories.map((cat) => (
+        <Link
+          key={cat.slug}
+          href={`/category/${cat.slug}`}
+          className={currentCategory === cat.slug ? activeClass : inactiveClass}
+          style={currentCategory === cat.slug && cat.color ? { background: cat.color, boxShadow: `0 4px 12px ${cat.color}44` } : undefined}
+        >
+          {cat.name}
+        </Link>
+      ))}
     </div>
   )
 }

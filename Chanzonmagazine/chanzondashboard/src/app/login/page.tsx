@@ -15,11 +15,11 @@ export default function LoginPage() {
     if (isAuthenticated) router.replace('/dashboard')
   }, [isAuthenticated, router])
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     clearError()
     setSubmitting(true)
-    const ok = login(username.trim(), password)
+    const ok = await login(username.trim(), password)
     setSubmitting(false)
     if (ok) router.replace('/dashboard')
   }
