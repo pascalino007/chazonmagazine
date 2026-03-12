@@ -16,7 +16,6 @@ exports.ArticlesController = void 0;
 const common_1 = require("@nestjs/common");
 const articles_service_1 = require("./articles.service");
 const create_article_dto_1 = require("./dto/create-article.dto");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let ArticlesController = class ArticlesController {
     constructor(svc) {
         this.svc = svc;
@@ -132,7 +131,6 @@ __decorate([
 ], ArticlesController.prototype, "getLikes", null);
 exports.ArticlesController = ArticlesController = __decorate([
     (0, common_1.Controller)('articles'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [articles_service_1.ArticlesService])
 ], ArticlesController);
 //# sourceMappingURL=articles.controller.js.map

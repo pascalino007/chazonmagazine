@@ -9,6 +9,7 @@ import { DashboardProvider } from '@/context/DashboardContext'
 const nav = [
   { href: '/dashboard', label: '📊 Tableau de bord', exact: true },
   { href: '/dashboard/posts', label: '📝 Articles' },
+  { href: '/dashboard/reportages', label: '🎥 Reportages' },
   { href: '/dashboard/categories', label: '🗂️ Catégories' },
   { href: '/dashboard/banners', label: '🖼️ Bannières' },
   { href: '/dashboard/projects', label: '🚀 Projets' },

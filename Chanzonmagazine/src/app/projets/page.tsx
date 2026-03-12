@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 async function getProjects() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4444/api'}/projects?active=true`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://api.chazonmagazine.com/api'}/projects?active=true`, {
       next: { revalidate: 60 },
     })
     if (!res.ok) return []

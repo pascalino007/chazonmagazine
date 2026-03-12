@@ -10,7 +10,7 @@ npm install
 npm run dev
 ```
 
-Ouvrir [http://localhost:3001](http://localhost:3001). La racine redirige vers `/dashboard`.
+Ouvrir [https://api.chazonmagazine.com:3001](https://api.chazonmagazine.com:3001). La racine redirige vers `/dashboard`.
 
 ## Fonctionnalités
 

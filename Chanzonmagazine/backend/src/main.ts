@@ -7,8 +7,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      process.env.FRONTEND_URL || 'http://localhost:3000',
-      process.env.DASHBOARD_URL || 'http://localhost:3001',
+      process.env.FRONTEND_URL || 'https://chazonmagazine.com',
+      process.env.DASHBOARD_URL || 'https://admin.chazonmagazine.com'
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -27,7 +27,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 4444
   await app.listen(port)
-  console.log(`🚀 Chanzon Backend running on http://localhost:${port}/api`)
+  console.log(`🚀 Chanzon Backend running on https://api.chazonmagazine.com:${port}/api`)
 }
 
 bootstrap()

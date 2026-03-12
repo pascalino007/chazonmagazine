@@ -18,6 +18,8 @@ import { Transaction } from './transactions/entities/transaction.entity'
 import { Tag } from './articles/entities/tag.entity'
 import { ArticleLike } from './articles/entities/article-like.entity'
 import { PageView } from './analytics/entities/page-view.entity'
+import { ReportagesModule } from './reportages/reportages.module'
+import { Reportage } from './reportages/entities/reportage.entity'
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { PageView } from './analytics/entities/page-view.entity'
         username: config.get('DB_USERNAME', 'root'),
         password: config.get('DB_PASSWORD', ''),
         database: config.get('DB_NAME', 'chanzon_db'),
-        entities: [Article, Category, Banner, Project, Transaction, Tag, ArticleLike, PageView],
+        entities: [Article, Category, Banner, Project, Transaction, Tag, ArticleLike, PageView ,Reportage],
         synchronize: true,
         charset: 'utf8mb4',
       }),
@@ -46,6 +48,7 @@ import { PageView } from './analytics/entities/page-view.entity'
     AnalyticsModule,
     SearchModule,
     AuthModule,
+    ReportagesModule,
   ],
 })
 export class AppModule {}

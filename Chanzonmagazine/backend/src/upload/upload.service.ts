@@ -10,17 +10,25 @@ export class UploadService {
   private region: string
 
   constructor(private config: ConfigService) {
-    this.region = config.get('AWS_REGION', 'eu-west-1')
-    this.bucket = config.get('AWS_S3_BUCKET', 'chanzon-media')
-    const accessKeyId = config.get('AWS_ACCESS_KEY_ID', '')
-    const secretAccessKey = config.get('AWS_SECRET_ACCESS_KEY', '')
-    if (accessKeyId && secretAccessKey) {
+    const endpoint = config.get('SPACES_ENDPOINT', '')
+    if (endpoint) {
+      const endpointUrl = new URL(endpoint)
+      this.region = endpointUrl.host.split('.')[0] // Extract region from endpoint (e.g., sfo2 from sfo2.digitaloceanspaces.com)
+    } else {
+      this.region = config.get('SPACES_REGION', 'fra1')
+    }
+    this.bucket = config.get('SPACES_BUCKET', 'myikigai')
+    const accessKeyId = config.get('SPACES_KEY', '')
+    const secretAccessKey = config.get('SPACES_SECRET', '')
+    if (accessKeyId && secretAccessKey && endpoint) {
       this.s3 = new S3Client({
         region: this.region,
         credentials: {
           accessKeyId,
           secretAccessKey,
         },
+        endpoint,
+        forcePathStyle: false, // Digital Ocean Spaces uses virtual-hosted style
       })
     } else {
       this.s3 = null as any
@@ -41,11 +49,11 @@ export class UploadService {
           ACL: 'public-read' as any,
         }),
       )
-      const url = `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`
+      const url = `https://${this.bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`
       return { url, key }
     } else {
       // For development, return a local URL without uploading
-      const url = `http://localhost:4444/${key}`
+      const url = `https://api.chazonmagazine.com/${key}`
       return { url, key }
     }
   }

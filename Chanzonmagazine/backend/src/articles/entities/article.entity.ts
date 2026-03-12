@@ -23,7 +23,7 @@ export class Article {
   @Column({ type: 'longtext' })
   content: string
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   imageUrl: string
 
   @Column({ type: 'json', nullable: true })

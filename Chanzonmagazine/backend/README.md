@@ -16,7 +16,7 @@ npm install
 npm run start:dev
 ```
 
-API base URL: `http://localhost:3001/api`
+API base URL: `https://api.chazonmagazine.com:3001/api`
 
 ## .env Variables
 

@@ -17,28 +17,50 @@ const uuid_1 = require("uuid");
 let UploadService = class UploadService {
     constructor(config) {
         this.config = config;
-        this.region = config.get('AWS_REGION', 'eu-west-1');
-        this.bucket = config.get('AWS_S3_BUCKET', 'chanzon-media');
-        this.s3 = new client_s3_1.S3Client({
-            region: this.region,
-            credentials: {
-                accessKeyId: config.get('AWS_ACCESS_KEY_ID', ''),
-                secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY', ''),
-            },
-        });
+        const endpoint = config.get('SPACES_ENDPOINT', '');
+        if (endpoint) {
+            const endpointUrl = new URL(endpoint);
+            this.region = endpointUrl.host.split('.')[0];
+        }
+        else {
+            this.region = config.get('SPACES_REGION', 'fra1');
+        }
+        this.bucket = config.get('SPACES_BUCKET', 'myikigai');
+        const accessKeyId = config.get('SPACES_KEY', '');
+        const secretAccessKey = config.get('SPACES_SECRET', '');
+        if (accessKeyId && secretAccessKey && endpoint) {
+            this.s3 = new client_s3_1.S3Client({
+                region: this.region,
+                credentials: {
+                    accessKeyId,
+                    secretAccessKey,
+                },
+                endpoint,
+                forcePathStyle: false,
+            });
+        }
+        else {
+            this.s3 = null;
+        }
     }
     async uploadFile(file, folder = 'uploads') {
         const ext = file.originalname.split('.').pop();
         const key = `${folder}/${(0, uuid_1.v4)()}.${ext}`;
-        await this.s3.send(new client_s3_1.PutObjectCommand({
-            Bucket: this.bucket,
-            Key: key,
-            Body: file.buffer,
-            ContentType: file.mimetype,
-            ACL: 'public-read',
-        }));
-        const url = `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
-        return { url, key };
+        if (this.s3) {
+            await this.s3.send(new client_s3_1.PutObjectCommand({
+                Bucket: this.bucket,
+                Key: key,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+                ACL: 'public-read',
+            }));
+            const url = `https://${this.bucket}.${this.region}.cdn.digitaloceanspaces.com/${key}`;
+            return { url, key };
+        }
+        else {
+            const url = `https://api.chazonmagazine.com/${key}`;
+            return { url, key };
+        }
     }
     async uploadMultiple(files, folder = 'uploads') {
         return Promise.all(files.map((f) => this.uploadFile(f, folder)));

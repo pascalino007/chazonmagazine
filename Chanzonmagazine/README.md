@@ -22,7 +22,7 @@ A modern, dark-themed magazine front-end inspired by humanitarian storytelling. 
    npm run dev
    ```
 
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+   Open [https://api.chazonmagazine.com:3000](https://api.chazonmagazine.com:3000) in your browser.
 
 3. **Build for production**
 

@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4444/api'
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://api.chazonmagazine.com/api'
 
 export interface CmsArticle {
   id: number
@@ -10,6 +10,25 @@ export interface CmsArticle {
   audioUrl?: string
   videoUrl?: string
   author: string
+  readTime?: string
+  status: string
+  viewCount: number
+  category?: { id: number; slug: string; name: string; color?: string }
+  tags?: { id: number; name: string; slug: string }[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CmsReportage {
+  id: number
+  slug: string
+  title: string
+  shortDescription: string
+  content: string
+  imageUrl?: string
+  audioUrl?: string
+  videoUrl?: string
+  author?: string
   readTime?: string
   status: string
   viewCount: number
@@ -68,6 +87,26 @@ export async function getPublishedArticles(opts?: {
     60,
   )
   return result ?? { data: [], total: 0 }
+}
+
+export async function getPublishedReportages(opts?: {
+  limit?: number
+  page?: number
+  categorySlug?: string
+}): Promise<{ data: CmsReportage[]; total: number }> {
+  const q = new URLSearchParams()
+  if (opts?.limit) q.set('limit', String(opts.limit))
+  if (opts?.page) q.set('page', String(opts.page))
+  if (opts?.categorySlug) q.set('category', opts.categorySlug)
+  const result = await apiFetch<{ data: CmsReportage[]; total: number }>(
+    `/reportages/published?${q}`,
+    60,
+  )
+  return result ?? { data: [], total: 0 }
+}
+
+export async function getReportageBySlug(slug: string): Promise<CmsReportage | null> {
+  return apiFetch<CmsReportage>(`/reportages/slug/${slug}`, 60)
 }
 
 export async function getArticleBySlug(slug: string): Promise<CmsArticle | null> {

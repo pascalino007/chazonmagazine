@@ -27,6 +27,8 @@ const transaction_entity_1 = require("./transactions/entities/transaction.entity
 const tag_entity_1 = require("./articles/entities/tag.entity");
 const article_like_entity_1 = require("./articles/entities/article-like.entity");
 const page_view_entity_1 = require("./analytics/entities/page-view.entity");
+const reportages_module_1 = require("./reportages/reportages.module");
+const reportage_entity_1 = require("./reportages/entities/reportage.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -44,7 +46,7 @@ exports.AppModule = AppModule = __decorate([
                     username: config.get('DB_USERNAME', 'root'),
                     password: config.get('DB_PASSWORD', ''),
                     database: config.get('DB_NAME', 'chanzon_db'),
-                    entities: [article_entity_1.Article, category_entity_1.Category, banner_entity_1.Banner, project_entity_1.Project, transaction_entity_1.Transaction, tag_entity_1.Tag, article_like_entity_1.ArticleLike, page_view_entity_1.PageView],
+                    entities: [article_entity_1.Article, category_entity_1.Category, banner_entity_1.Banner, project_entity_1.Project, transaction_entity_1.Transaction, tag_entity_1.Tag, article_like_entity_1.ArticleLike, page_view_entity_1.PageView, reportage_entity_1.Reportage],
                     synchronize: true,
                     charset: 'utf8mb4',
                 }),
@@ -58,6 +60,7 @@ exports.AppModule = AppModule = __decorate([
             analytics_module_1.AnalyticsModule,
             search_module_1.SearchModule,
             auth_module_1.AuthModule,
+            reportages_module_1.ReportagesModule,
         ],
     })
 ], AppModule);
